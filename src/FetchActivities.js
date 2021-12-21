@@ -63,22 +63,23 @@ const AuthorizeAPI = () => {
         }
     }
     let customData;
+    
     const createChartJS = () => {
         if(activities) {
             customData =  {
                 datasets: [
-                    // {
-                    //     label: "Distance",
-                    //     data: activities.map((activity) => activity.distance ),
-                    //     borderColor: 'rgb(0, 255, 0)',
-                    //     backgroundColor: 'rgba(0, 255, 0, 0.5)',
-                    // },
-                    // {
-                    //     label: "Average speed",
-                    //     data: activities.map((activity) => activity.average_speed / 60),
-                    //     borderColor: 'rgb(255, 0, 0)',
-                    //     backgroundColor: 'rgba(255, 0, 0, 0.5)',
-                    // },
+                    {
+                        label: "Distance",
+                        data: activities.map((activity) => activity.distance ),
+                        borderColor: 'rgb(0, 255, 0)',
+                        backgroundColor: 'rgba(0, 255, 0, 0.5)',
+                    },
+                    {
+                        label: "Average speed",
+                        data: activities.map((activity) => activity.average_speed / 60),
+                        borderColor: 'rgb(255, 0, 0)',
+                        backgroundColor: 'rgba(255, 0, 0, 0.5)',
+                    },
                     {
                         label: "Max speed",
                         data: activities.map((activity) => activity.elapsed_time / 60 ),
@@ -88,9 +89,9 @@ const AuthorizeAPI = () => {
                 ],
                 labels: activities.map((activity) => {
                     //The maximum speed of this lat, in meters per second
-                    return activity.max_speed;
-                    // let date = activity.start_date.split("T");
-                    // return date[0];
+                    //return activity.max_speed;
+                    let date = activity.start_date.split("T");
+                    return date[0];
                 })
 
             }
@@ -99,21 +100,29 @@ const AuthorizeAPI = () => {
     }
     const displayGraphs = () => {
         if(chartData) {
-            document.querySelector(".activities").setAttribute("style", "display: none");
             setDisplayChart(true);
         }
     }
-    const renderActivities = () => {
-        if(activities) {
-            document.querySelector(".activities").setAttribute("style", "display: block");
-            setDisplayChart(false);
+    
+    const makeDataset = (event) => {
+        let input = event.target.value;
+        
+        let chartDataCopyObject = Object.keys(activities[0]);
+        if(chartDataCopyObject.includes(input)) {
+            console.log(input);
+            let newDataset = {
+                label: input,
+                data: activities.map((activity) => {
+                    return activity[input];
+                }),
+                borderColor: 'rgb(0, 0, 255)',
+                backgroundColor: 'rgba(0, 0, 255, 0.5)',
+            } 
+            return chartData.datasets.push(newDataset);  
         }
-    }
+        
 
-    const renderGraph = (graph) => {
-        return;
-    }
-
+    } 
     useEffect(() => {
         fetchAccessToken();
         fetchData(); 
@@ -127,12 +136,29 @@ const AuthorizeAPI = () => {
     } else {
         return (
                 <div className="main">
-                    { displayChart &&<button onClick={renderActivities}>Render activities</button> }
-                    <button onClick={displayGraphs}>View statistics</button>
-                    { displayChart && 
-                        <CustomChartJS className="map" data={chartData} /> 
-                    }
+                    <div className="menu">
+                        <ul className="menu-list">
+                            <li className="menu-li">
+                                <div className="menu-item">Activities</div>
+                            </li>
+                            <li className="menu-li">
+                                <div className="menu-item" onClick={displayGraphs}>Statistics</div>
+                            </li>
+                        </ul>
+                    </div>
                     <div className="activities">
+                    
+                    <h1 className="heading-primary">
+                        View my activities 
+                        <div className="heading-gradient">for fun</div>
+                    </h1>
+                    <div className="performance-form" >
+                        <label for="datasetInput">Enter performance type</label>
+                        <input id="datasetInput"type="text" onChange={makeDataset} placeholder="max_speed"></input>
+                    </div>
+                    { displayChart && 
+                        <CustomChartJS className="map" data={ chartData } /> 
+                    }
                         { activities.map((activity, id, index) => (
                             <div className="activity" key={id}>
                                 { activity.start_latitude && <MapContainer 
@@ -153,6 +179,7 @@ const AuthorizeAPI = () => {
                         ))}
                     </div>
                 </div>
+                
         );
     }
 }
