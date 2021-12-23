@@ -102,8 +102,28 @@ const AuthorizeAPI = () => {
             return setChartData({...customData});
         }
     }
-
-    const makeDataset = (event) => {
+    const addAbsDataset = (event) => {
+        let input = event.target.value;
+        if(input === undefined) {
+            input = event.target.previousSibling.value;
+        }
+        let chartDataCopyObject = Object.keys(activities[0]);
+        if(chartDataCopyObject.includes(input)) {
+            let labels = 
+                activities.map((activity) => {
+                return activity[input];
+            })
+            chartData.labels.splice(0, (chartData.labels.length));
+            chartData.labels = labels;
+            setChartData(chartData);
+            setDisplayChart(false);
+            setTimeout(() => {
+                setDisplayChart(true);
+            }, 500);
+        }
+        
+    }
+    const addOrdDataset = (event) => {
         let input = event.target.value;
         if(input === undefined) {
             input = event.target.previousSibling.value;
@@ -177,7 +197,21 @@ const AuthorizeAPI = () => {
                     <h1 className="heading-primary">
                         View my activities 
                         <div className="heading-gradient">for fun</div>
-                    </h1>                        
+                    </h1>  
+                    <div className="chart-container">
+                        <div className="ord">                            
+                            <div className="ord-picker">
+                                { Object.keys(activities[0]).map((chartPropertyValue, id) => (
+                                    <Input 
+                                        value={ chartPropertyValue } 
+                                        key={ id } 
+                                        onClickChange = { addOrdDataset }
+                                    />
+                                ))
+                                }
+                            </div>
+                        </div>    
+                        <div className="canva">
                         { displayChart ?
                             <CustomChartJS 
                                 className="chart-js" 
@@ -186,17 +220,19 @@ const AuthorizeAPI = () => {
                             :
                             <div className="loader"></div>
                         }
-                        
+                        </div>
                         <div className="absciss-picker">
                             { Object.keys(activities[0]).map((chartPropertyValue, id) => (
                                 <Input 
                                     value={ chartPropertyValue } 
                                     key={ id } 
-                                    onClickChange = { makeDataset }
+                                    onClickChange = { addAbsDataset }
                                 />
                             ))
                             }
                         </div>
+                    </div>                      
+                        
                         { !displayChart && activities.map((activity, id, index) => (
                             <div className="activity" key={id}>
                                 { activity.start_latitude && <MapContainer 

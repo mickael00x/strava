@@ -105,14 +105,39 @@ body {
   border-radius: 5px;
 }
 
+.chart-container {
+  max-width: 90vw;
+
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 400px;
+}
+.ord {
+  flex: 0 0 20%;
+  max-width: 20%;
+}
+
+.canva {
+  flex: 0 0 80%;
+  max-width: 80%;
+}
+
 .absciss-picker {
   display: flex;
+  align-items: center;
   margin: 20px 0;
+  flex: 0 0 100%;
   max-width: 100%;
-  flex-wrap: wrap;
+  overflow-x: scroll;
+}
+.ord-picker {
+  align-items: flex-start;
+  max-height: 400px;
+  overflow-y: scroll;
 }
 .absciss-container {
     position: relative;
+    width: fit-content;
 }
 input.absciss-item {
   padding: 5px 10px;
