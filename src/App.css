@@ -1,5 +1,5 @@
 body {
-  font-family: "Inter";
+  font-family: "Inter", -apple-system;
   text-rendering: optimizelegibility;
   -webkit-font-smoothing: antialiased;
 }
@@ -32,11 +32,11 @@ body {
   padding: 20px 100px;
   width: fit-content;
   display: flex;
-  flex-wrap: wrap;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   margin: 0 auto;
+  max-width: 800px;
 }
 
 .performance-form {
@@ -104,12 +104,57 @@ body {
   z-index: 10;
   border-radius: 5px;
 }
-canvas {
-  background-color: #FFFFFF;
-  padding: 20px;
-  margin: 20px;
-  border-radius: 10px;
-  min-width: 1000px;
+
+.absciss-picker {
+  display: flex;
+  margin: 20px 0;
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+.absciss-container {
+    position: relative;
+}
+input.absciss-item {
+  padding: 5px 10px;
+  border-radius: 100px;
+  border: 1px solid #D7D7D7;
+  margin-left: 5px;
+  margin-bottom: 5px;
+  cursor: pointer;
+  transition: all .2s ease-in-out;
+  max-width: auto;
+  z-index:9;
+}
+input.absciss-item-active {
+  border: 1px solid #f38825;
+  color: #f38825;
+  position: relative;
+  z-index:10;
+  padding-right: 30px;
+}
+.absciss-item:hover {
+  border: 1px solid #f38825;
+  color: #f38825;
+}
+.absciss-item-cross {
+  position: absolute;
+  z-index: 10;
+  top: 5px;
+  right: 8px;
+  height: 15px;
+  width: 15px;
+  color: #707070;
+  border: 1px solid #707070;
+  text-align: center;
+  border-radius: 100px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all .2s ease-in-out;
+}
+.absciss-item-cross:hover {
+  color: #FFF;
+  background-color: black;
+  border: 1px solid black;
 }
 .name, .distance, .average-speed {
   padding: 0 20px;

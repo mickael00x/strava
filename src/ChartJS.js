@@ -1,15 +1,18 @@
-import React from 'react';
+import React, { useRef, useState, createRef, useEffect, useCallback } from 'react';
+
 import {
   Chart as ChartJS,
-  CategoryScale,
   LinearScale,
+  CategoryScale,
+  BarElement,
   PointElement,
   LineElement,
-  Title,
-  Tooltip,
   Legend,
+  Tooltip,
+  Title
 } from 'chart.js';
-import { Line } from 'react-chartjs-2';
+
+import { Line, Doughnut, Bar, Chart } from 'react-chartjs-2';
 
 
 ChartJS.register(
@@ -17,11 +20,27 @@ ChartJS.register(
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend
 );
 
+
+
 export default function CustomChartJS(props) {
-  return <Line data={props.data} />;
+  const [chartRef, setChartRef] = useState({}); 
+
+  useEffect(() => {
+    setChartRef(ChartJS.instances);
+  }, [chartRef]);
+
+
+  return (
+            <Chart 
+              type="line"
+              data={ props.data } 
+              ref={ chartRef } 
+            />
+  );
 }
