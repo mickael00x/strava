@@ -2,21 +2,17 @@ import React, { useState, createRef, useCallback } from "react";
 
 
 export default function Input({value, onClickChange}) {
-    const handleInputChange = useCallback((eventFunction) => {
-        onClickChange(eventFunction);
-        
-        if(!isActive) {
-            setIsActive(true);
-        } else {
+
+    const handleInputChange = useCallback((event) => {
+        onClickChange(event);
+        if(isActive) {
             setIsActive(false);
+        } else {
+            setIsActive(true);
         }
-        
     }, [onClickChange])
 
-
-
     const [isActive, setIsActive] = useState(false);
-
     const inputRef = createRef();
 
     return <div className="absciss-container">
@@ -26,8 +22,8 @@ export default function Input({value, onClickChange}) {
                 isActive={isActive}
                 value={ value }
                 ref={ inputRef }    
-                style= {{ width: value.length * 7 }}
                 onClick={ handleInputChange }
+                style= {{ width: value.length * 7 }}
             ></input>
             { isActive && <span onClick={ handleInputChange } className="absciss-item-cross">x</span>}
             </div>;

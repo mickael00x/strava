@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Polygon, Polyline } from 'react-leaflet';
 import "./Polyline.leaflet";
 import 'leaflet/dist/leaflet.css';  
-import CustomChartJS from "./ChartJS";
-import Input from "./Input";
+import ApexChart from "./ApexChart";
+
 
 const AuthorizeAPI = () => {
     const [error, setError] = useState(null);
@@ -11,12 +11,8 @@ const AuthorizeAPI = () => {
     const [isAuth, setIsAuth] = useState(false); 
     const [areActivitiesLoaded, setAreActivitiesLoaded] = useState(false); 
     const [activities, setActivities] = useState([]);
-    const [chartData, setChartData] = useState({});
-    const [displayChart, setDisplayChart] = useState(false);
-    // const inputRef = useRef(null);
-
-    let customData;
-
+    
+    
     const limeOptions = { 
         color: 'red',
         weight: 3,
@@ -55,6 +51,9 @@ const AuthorizeAPI = () => {
                     if(activity.map.summary_polyline === null) return  
                     let coordinates = L.PolylineUtil.decode(activity.map.summary_polyline);
                     activity.coordinates = coordinates;
+                    activity.average_speed = (activity.average_speed * 3.6).toFixed(1);
+                    activity.distance = (activity.distance / 1000).toFixed(2);
+                    
                 });
                 setActivities(newData);
                 setAreActivitiesLoaded(true);
@@ -66,114 +65,11 @@ const AuthorizeAPI = () => {
         }
     }
 
-    
-    
-    const createChartJS = () => {
-        if(activities && areActivitiesLoaded) {
-            customData =  {
-                datasets: [
-                    {
-                        label: "Distance",
-                        data: activities.map((activity) => activity.distance ),
-                        borderColor: `rgb(${Math.random()*256|0}, ${Math.random()*256|0}, ${Math.random()*256|0})`,
-                        backgroundColor: `rgba(${Math.random()*256|0}, ${Math.random()*256|0}, ${Math.random()*256|0}, 0.5)`,
-                    },
-                    {
-                        label: "Average speed",
-                        data: activities.map((activity) => activity.average_speed / 60),
-                        borderColor: `rgb(${Math.random()*256|0}, ${Math.random()*256|0}, ${Math.random()*256|0})`,
-                        backgroundColor: `rgba(${Math.random()*256|0}, ${Math.random()*256|0}, ${Math.random()*256|0}, 0.5)`,
-                    },
-                    {
-                        label: "Max speed",
-                        data: activities.map((activity) => activity.elapsed_time / 60 ),
-                        borderColor: `rgb(${Math.random()*256|0}, ${Math.random()*256|0}, ${Math.random()*256|0})`,
-                        backgroundColor: `rgba(${Math.random()*256|0}, ${Math.random()*256|0}, ${Math.random()*256|0}, 0.5)`,
-                    }
-                ],
-                labels: activities.map((activity) => {
-                    //The maximum speed of this lat, in meters per second
-                    //return activity.max_speed;
-                    let date = activity.start_date.split("T");
-                    return date[0];
-                })
 
-            } 
-            return setChartData({...customData});
-        }
-    }
-    const addAbsDataset = (event) => {
-        let input = event.target.value;
-        if(input === undefined) {
-            input = event.target.previousSibling.value;
-        }
-        let chartDataCopyObject = Object.keys(activities[0]);
-        if(chartDataCopyObject.includes(input)) {
-            let labels = 
-                activities.map((activity) => {
-                return activity[input];
-            })
-            chartData.labels.splice(0, (chartData.labels.length));
-            chartData.labels = labels;
-            setChartData(chartData);
-            setDisplayChart(false);
-            setTimeout(() => {
-                setDisplayChart(true);
-            }, 500);
-        }
-        
-    }
-    const addOrdDataset = (event) => {
-        let input = event.target.value;
-        if(input === undefined) {
-            input = event.target.previousSibling.value;
-        }
-        let chartDataCopyObject = Object.keys(activities[0]);
-        if(chartDataCopyObject.includes(input)) {
-            let dataset = {
-                label: input,
-                type: "bar",
-                data: activities.map((activity) => {
-                    return activity[input];
-                }),
-                borderColor: `rgb(${Math.random()*256|0}, ${Math.random()*256|0}, ${Math.random()*256|0})`,
-                backgroundColor: `rgba(${Math.random()*256|0}, ${Math.random()*256|0}, ${Math.random()*256|0}, 0.5)`,
-            } 
-            let chartCompare;
-            chartData.datasets.forEach((set,index) => {
-                chartCompare = set;
-            });
-
-            if(dataset.label === chartCompare.label) {
-                chartData.datasets.splice((chartData.datasets).length -1, 1);
-                console.log(chartData.datasets);
-                setChartData(chartData);
-            } else {
-                chartData.datasets.push(dataset);
-                setChartData(chartData);
-            }
-            
-            
-            setDisplayChart(false);
-            setTimeout(() => {
-                setDisplayChart(true);
-            }, 500);
-        }
-        
-    } 
-    const displayGraphs = () => {
-        if(chartData && !displayChart) {
-            setDisplayChart(true);
-            
-        } else {
-            setDisplayChart(false);
-        }
-    }
-    
     useEffect(() => {
         fetchAccessToken();
         fetchData(); 
-        createChartJS();
+
     }, [auth, activities]);
 
     if(!areActivitiesLoaded) {
@@ -189,51 +85,29 @@ const AuthorizeAPI = () => {
                                 <div className="menu-item">Activities</div>
                             </li>
                             <li className="menu-li">
-                                <div className="menu-item" onClick={displayGraphs}>Statistics</div>
+                                <div className="menu-item">Statistics</div>
                             </li>
                         </ul>
                     </div>
                     <div className="activities">
+                    <ApexChart 
+                        xaxis={activities.map((activity => {
+                            let date = activity.start_date.split("T");
+                            return date[0];
+                        }))} 
+                        data={activities.map((activity => activity.moving_time))} 
+                        name={"Average speed"}  
+                        type={"line"}
+                        activitiesLabel={ Object.keys(activities[0]) }
+                        activities={activities}
+                    />
+                    
                     <h1 className="heading-primary">
                         View my activities 
                         <div className="heading-gradient">for fun</div>
                     </h1>  
-                    <div className="chart-container">
-                        <div className="ord">                            
-                            <div className="ord-picker">
-                                { Object.keys(activities[0]).map((chartPropertyValue, id) => (
-                                    <Input 
-                                        value={ chartPropertyValue } 
-                                        key={ id } 
-                                        onClickChange = { addOrdDataset }
-                                    />
-                                ))
-                                }
-                            </div>
-                        </div>    
-                        <div className="canva">
-                        { displayChart ?
-                            <CustomChartJS 
-                                className="chart-js" 
-                                data={ chartData } 
-                            /> 
-                            :
-                            <div className="loader"></div>
-                        }
-                        </div>
-                        <div className="absciss-picker">
-                            { Object.keys(activities[0]).map((chartPropertyValue, id) => (
-                                <Input 
-                                    value={ chartPropertyValue } 
-                                    key={ id } 
-                                    onClickChange = { addAbsDataset }
-                                />
-                            ))
-                            }
-                        </div>
-                    </div>                      
-                        
-                        { !displayChart && activities.map((activity, id, index) => (
+                                       
+                        { activities.map((activity, id, index) => (
                             <div className="activity" key={id}>
                                 { activity.start_latitude && <MapContainer 
                                     className="map"
@@ -247,10 +121,9 @@ const AuthorizeAPI = () => {
                                 </MapContainer>}
                                 <div className="type"> {activity.type} </div>
                                 <div className="name"> {activity.name} </div>
-                                <div className="distance">Distance: { (activity.distance / 1000).toFixed(2) }km</div>
-                                <div className="average-speed">Average speed: { (activity.average_speed * 3.6).toFixed(1) }km/h</div>
+                                <div className="distance">Distance: { activity.distance }km</div>
+                                <div className="average-speed">Average speed: { activity.average_speed }km/h</div>
                             </div>
-
                         ))}
                     </div>
                 </div>
