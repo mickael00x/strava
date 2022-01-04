@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, Polygon, Polyline } from 'react
 import "./Polyline.leaflet";
 import 'leaflet/dist/leaflet.css';  
 import ApexChart from "./ApexChart";
-
+import ThemeSwitcher from "./ThemeSwitcher";
 
 const AuthorizeAPI = () => {
     const [error, setError] = useState(null);
@@ -11,7 +11,6 @@ const AuthorizeAPI = () => {
     const [isAuth, setIsAuth] = useState(false); 
     const [areActivitiesLoaded, setAreActivitiesLoaded] = useState(false); 
     const [activities, setActivities] = useState([]);
-    
     
     const limeOptions = { 
         color: 'red',
@@ -65,7 +64,7 @@ const AuthorizeAPI = () => {
         }
     }
 
-
+    
     useEffect(() => {
         fetchAccessToken();
         fetchData(); 
@@ -86,6 +85,11 @@ const AuthorizeAPI = () => {
                             </li>
                             <li className="menu-li">
                                 <div className="menu-item">Statistics</div>
+                            </li>
+                            <li className="menu-li">
+                                <div className="menu-item">
+                                    <ThemeSwitcher />
+                                </div>
                             </li>
                         </ul>
                     </div>
