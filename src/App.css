@@ -105,13 +105,7 @@ body {
   border-radius: 5px;
 }
 
-.chart-container {
-  max-width: 90vw;
 
-  display: flex;
-  flex-wrap: wrap;
-  margin-bottom: 400px;
-}
 .ord {
   flex: 0 0 20%;
   max-width: 20%;
@@ -121,7 +115,19 @@ body {
   flex: 0 0 80%;
   max-width: 80%;
 }
-
+.mixed-chart {
+  max-width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.inputs  {
+  display: flex;
+  max-width: 100%;
+  overflow-x: scroll;
+}
 .absciss-picker {
   display: flex;
   align-items: center;

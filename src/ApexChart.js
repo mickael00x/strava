@@ -51,13 +51,15 @@ class ApexChart extends Component {
               width="1000"
               ref={this.ref}
             />   
+            <div className="inputs">
             {this.props.activitiesLabel.map((value,id) => (
             <Input
                 value={ value }
                 key={ id }
                 onClickChange={ this.updateCharts }
             />
-            ))}         
+            ))}  
+            </div>       
           </div>
      
     );
