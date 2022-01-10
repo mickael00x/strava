@@ -63,7 +63,6 @@ const AuthorizeAPI = () => {
             
         }
     }
-
     
     useEffect(() => {
         fetchAccessToken();
@@ -99,9 +98,9 @@ const AuthorizeAPI = () => {
                             let date = activity.start_date.split("T");
                             return date[0];
                         }))} 
-                        data={activities.map((activity => activity.moving_time))} 
-                        name={"Average speed"}  
-                        type={"line"}
+                        data={activities.map((activity => activity.average_speed))} 
+                        name={"average_speed"}  
+                        type={"area"}
                         activitiesLabel={ Object.keys(activities[0]) }
                         activities={activities}
                     />

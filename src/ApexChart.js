@@ -6,7 +6,7 @@ class ApexChart extends Component {
   constructor(props) {
     super(props);
     this.updateCharts = this.updateCharts.bind(this);
-
+    this.resetChart = this.resetChart.bind(this);
     this.state = {
       options: {
         chart: {
@@ -25,24 +25,57 @@ class ApexChart extends Component {
     };
   }
 
-  updateCharts = (e) => {
-    console.log(e.target.value);
-    let target = e.target.value;
+  /*
+    [] reset 
+    [x] remove input 
+    [] add already in array  
+  */
+
+  updateCharts = (event) => {
+    let input = event.target.value;
+    if(input === undefined) {
+      input = event.target.previousSibling.value;
+    }
+
     const newSerie  = {
-      name: target,
-      data: this.props.activities.map(activity => activity[target])
+      name: input,
+      data: this.props.activities.map(activity => activity[input])
     };
-    this.state.series.push(newSerie);
-    this.setState({
-      series: this.state.series
+    const chartData = [];
+    this.state.series.forEach(setOfData => {
+      chartData.push(setOfData.name);
     })
+
+    if(!chartData.includes(input)) {
+      this.state.series.push(newSerie);
+      this.setState({
+        series: this.state.series
+    })
+    } else {
+      let keys = Object.values(this.state.series);
+      let indexToDelete;
+      keys.forEach((key, index) => {
+        let keyName = Object.values(key);
+        if(keyName[0] === input) {
+          indexToDelete = index;
+        }
+      })
+      keys.splice(indexToDelete, 1);
+      this.setState({
+        series: keys
+      })
+    }
     this.render();
   }
+
+  resetChart = () => {
+    this.setState({
+      series: [{}]
+    })
+  } 
   
   render() {
-    
     return (
-     
           <div className="mixed-chart">
             <Chart
               options={this.state.options}
@@ -51,13 +84,14 @@ class ApexChart extends Component {
               width="1000"
               ref={this.ref}
             />   
+            <button className="reset-chart" onClick={this.resetChart}>Reset</button>
             <div className="inputs">
             {this.props.activitiesLabel.map((value,id) => (
-            <Input
-                value={ value }
-                key={ id }
-                onClickChange={ this.updateCharts }
-            />
+              <Input
+                  value={ value }
+                  key={ id }
+                  onClickChange={ this.updateCharts }
+              />
             ))}  
             </div>       
           </div>
